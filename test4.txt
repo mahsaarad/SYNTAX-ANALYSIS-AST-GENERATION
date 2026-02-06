@@ -1,0 +1,13 @@
+int globalCount;
+
+function inc(x) {
+  int y;
+  y = x + 1;
+  return y;
+}
+
+function main() {
+  int a;
+  a = 5;
+  a = inc(a);
+}

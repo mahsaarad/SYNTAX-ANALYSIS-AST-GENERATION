@@ -1,0 +1,4 @@
+function bad() {
+  int x
+  x = 1;
+}

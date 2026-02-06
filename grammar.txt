@@ -1,0 +1,24 @@
+Program     -> Declaration*
+Declaration -> "int" ID ";" 
+            | "function" ID "(" Params? ")" Block
+            | Statement
+
+Params      -> ID ("," ID)*
+
+Statement   -> IfStmt | WhileStmt | ReturnStmt | Block | Assign | Call
+
+IfStmt      -> "if" "(" Expr ")" Statement ("else" Statement)?
+WhileStmt   -> "while" "(" Expr ")" Statement
+ReturnStmt  -> "return" Expr? ";"
+Block       -> "{" Declaration* "}"
+
+Assign      -> ID "=" Expr ";"
+Call        -> ID "(" (Expr ("," Expr)*)? ")" ";"
+
+Expr        -> Equality
+Equality    -> Comparison (("==" | "!=") Comparison)*
+Comparison  -> Term (("<" | "<=" | ">" | ">=") Term)*
+Term        -> Factor (("+" | "-") Factor)*
+Factor      -> Unary (("*" | "/") Unary)*
+Unary       -> ("-" | "!") Unary | Primary
+Primary     -> NUMBER | ID | "(" Expr ")"
