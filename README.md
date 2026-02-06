@@ -4,7 +4,7 @@ This project implements a **hand-written recursive descent parser** for a small 
 
 ---
 
-## ✅ Features
+##  Features
 - Hand‑written **recursive descent parser**
 - **AST construction** (Program, Functions, Statements, Expressions, etc.)
 - **Visitor pattern** for tree traversal
@@ -15,7 +15,7 @@ This project implements a **hand-written recursive descent parser** for a small 
 
 ---
 
-## ✅ Grammar (summary)
+##  Grammar (summary)
 
 ```
 Program     -> Declaration*
@@ -46,7 +46,7 @@ Primary     -> NUMBER | ID | "(" Expr ")"
 
 ---
 
-## ✅ Project Structure
+##  Project Structure
 
 ```
 .
@@ -65,7 +65,7 @@ Primary     -> NUMBER | ID | "(" Expr ")"
 
 ---
 
-## ✅ Run (Windows / WSL / Linux)
+##  Run (Windows / WSL / Linux)
 
 ```bash
 python main.py tests/input1_valid.txt
@@ -79,7 +79,7 @@ python main.py tests/input1_valid.txt --json
 
 ---
 
-## ✅ Example Input
+##  Example Input
 
 ```text
 int globalCount;
@@ -99,7 +99,7 @@ function main() {
 
 ---
 
-## ✅ Example Output (PrintVisitor)
+##  Example Output (PrintVisitor)
 
 ```
 Program
@@ -125,7 +125,7 @@ Program
 
 ---
 
-## ✅ Error Recovery
+##  Error Recovery
 If the input contains invalid syntax, the parser:
 - reports errors,
 - skips to a safe point,
@@ -133,10 +133,10 @@ If the input contains invalid syntax, the parser:
 
 ---
 
-## ✅ Requirements
+##  Requirements
 - Python 3.8+
 
 ---
 
-## ✅ Notes
-This project is **hand‑written** and does **not** use parser generators (ANTLR/YACC/Bison), as required by the assignment.
+##  Notes
+This project is **hand‑written** and does **not** use parser generators (ANTLR/YACC/Bison).
