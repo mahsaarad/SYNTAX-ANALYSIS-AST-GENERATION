@@ -137,6 +137,6 @@ SYNTAX ERRORS:
 
 ---
 
-## ✅ Notes
+##  Notes
 
 This project is **fully hand‑written** and does **not** use parser generators (ANTLR/YACC/Bison).
