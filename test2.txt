@@ -4,7 +4,7 @@ function void test() {
   i = 0;
 
   while (i < 3) {
-    for (j = 0; j < 2; j = j + 1) {
+    for (j = 0; j < 2; j + 1) {
       if (i == 1 && j == 1) {
         print("middle");
       } else if (i == 2 || j == 0) {

@@ -1,4 +1,4 @@
-function int max(int a, int b) {
+function int maxNum(int a, int b) {
   if (a >= b) {
     return a;
   } else {
@@ -19,7 +19,7 @@ function void main() {
 
   print(msg);
 
-  for (i = 0; i < 5; i = i + 1) {
+  for (i = 0; i < 5; ) {
     if (i == 2 || i == 3) {
       print("two or three");
     } else if (i >= 4 && ok) {
@@ -27,5 +27,6 @@ function void main() {
     } else {
       print("other");
     }
+    i = i + 1;
   }
 }
