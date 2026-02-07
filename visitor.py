@@ -10,6 +10,7 @@ class Visitor:
     def visit_return(self, node): pass
     def visit_assign(self, node): pass
     def visit_binop(self, node): pass
+    def visit_unary(self, node): pass
     def visit_literal(self, node): pass
     def visit_identifier(self, node): pass
     def visit_call(self, node): pass
@@ -89,6 +90,12 @@ class PrintVisitor(Visitor):
         node.right.accept(self)
         self.indent -= 1
 
+    def visit_unary(self, node):
+        self._p(f"UnaryOp {node.op}")
+        self.indent += 1
+        node.operand.accept(self)
+        self.indent -= 1
+
     def visit_literal(self, node):
         self._p(f"Literal {node.value}")
 
@@ -120,7 +127,7 @@ class JsonVisitor(Visitor):
             "type": "If",
             "condition": node.condition.accept(self),
             "then": node.then_branch.accept(self),
-            "else": node.else_branch.accept(self) if node.else_branch else None,
+            "else": node.else_branch.accept(self) if node.else_branch else None
         }
 
     def visit_while(self, node):
@@ -134,6 +141,9 @@ class JsonVisitor(Visitor):
 
     def visit_binop(self, node):
         return {"type": "BinaryOp", "op": node.op, "left": node.left.accept(self), "right": node.right.accept(self)}
+
+    def visit_unary(self, node):
+        return {"type": "UnaryOp", "op": node.op, "operand": node.operand.accept(self)}
 
     def visit_literal(self, node):
         return {"type": "Literal", "value": node.value}

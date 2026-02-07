@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional, Any
+from typing import List, Optional
 
 class Node:
     def accept(self, visitor):
@@ -58,6 +58,12 @@ class BinaryOp(Node):
     op: str
     right: Node
     def accept(self, visitor): return visitor.visit_binop(self)
+
+@dataclass
+class UnaryOp(Node):
+    op: str
+    operand: Node
+    def accept(self, visitor): return visitor.visit_unary(self)
 
 @dataclass
 class Literal(Node):

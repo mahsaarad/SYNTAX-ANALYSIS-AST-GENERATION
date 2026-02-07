@@ -1,4 +1,4 @@
-int x;
+int x ;
 function add(a, b) {
   return a + b;
 } 

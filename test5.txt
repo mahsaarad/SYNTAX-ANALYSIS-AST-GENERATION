@@ -5,9 +5,9 @@ function main() {
     int temp;
     temp = i * 2;
     if (temp > 2) {
-      i = i + 1;
+      i = i + 1; ;
     } else {
-      i = i + 2;
+      i = i + 2; 
     }
   }
 }

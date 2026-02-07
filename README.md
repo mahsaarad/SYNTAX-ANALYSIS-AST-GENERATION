@@ -56,11 +56,12 @@ Primary     -> NUMBER | ID | "(" Expr ")"
 ├── visitor.py
 ├── main.py
 ├── grammar.txt
-└── tests/
-    ├── input1_valid.txt
-    ├── input2_nested.txt
-    ├── input3_invalid.txt
-    └── input4.txt
+├── test1.txt
+├── test2.txt
+├── test3.txt
+├── test4.txt
+├── test5.txt
+└── test6.txt
 ```
 
 ---
@@ -68,59 +69,13 @@ Primary     -> NUMBER | ID | "(" Expr ")"
 ##  Run (Windows / WSL / Linux)
 
 ```bash
-python main.py tests/input1_valid.txt
+python main.py test1.txt
 ```
 
 For JSON output:
 
 ```bash
-python main.py tests/input1_valid.txt --json
-```
-
----
-
-##  Example Input
-
-```text
-int globalCount;
-
-function inc(x) {
-  int y;
-  y = x + 1;
-  return y;
-}
-
-function main() {
-  int a;
-  a = 5;
-  a = inc(a);
-}
-```
-
----
-
-##  Example Output (PrintVisitor)
-
-```
-Program
-  VarDecl type=int name=globalCount
-  FuncDecl inc params=['x']
-    Block
-      VarDecl type=int name=y
-      Assign y
-        BinaryOp +
-          Identifier x
-          Literal 1
-      Return
-        Identifier y
-  FuncDecl main params=[]
-    Block
-      VarDecl type=int name=a
-      Assign a
-        Literal 5
-      Assign a
-        Call inc
-          Identifier a
+python main.py test1.txt --json
 ```
 
 ---

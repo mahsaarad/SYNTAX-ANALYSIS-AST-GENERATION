@@ -39,11 +39,14 @@ class Parser:
         if self.current().type != "EOF":
             self.advance()
 
-        sync_types = {"SEMICOL", "RBRACE", "EOF"}
+        sync_types = {
+            "SEMICOL", "RBRACE", "EOF",
+            "INT", "FUNCTION", "IF", "WHILE", "RETURN"
+        }
         while self.current().type not in sync_types:
             self.advance()
 
-        if self.current().type in {"SEMICOL", "RBRACE"}:
+        if self.current().type == "SEMICOL":
             self.advance()
 
     def parse(self):
@@ -52,7 +55,6 @@ class Parser:
             try:
                 decls.append(self.declaration())
             except ParserError:
-                # IMPORTANT: advance past the bad token(s)
                 self.synchronize()
         return Program(decls)
 
@@ -126,10 +128,14 @@ class Parser:
                 self.expect("SEMICOL")
                 return Call(name, args)
             else:
-                raise ParserError("Invalid statement")
+                cur = self.current()
+                msg = f"Invalid statement near {cur.type} at line {cur.line}, col {cur.column}"
+                self.errors.append(msg)
+                self.synchronize()
+                raise ParserError(msg)
 
-        # NEW: ensure we record + advance on unexpected tokens
-        msg = f"Unexpected token {self.current().type} at line {self.current().line}, col {self.current().column}"
+        cur = self.current()
+        msg = f"Unexpected token {cur.type} at line {cur.line}, col {cur.column}"
         self.errors.append(msg)
         self.synchronize()
         raise ParserError(msg)
@@ -184,7 +190,7 @@ class Parser:
         if self.current().type == "OP" and self.current().value in ("-", "!"):
             op = self.expect("OP").value
             right = self.unary()
-            return BinaryOp(Literal("0"), op, right)
+            return UnaryOp(op, right)
         return self.primary()
 
     def primary(self):
@@ -206,4 +212,9 @@ class Parser:
             expr = self.expression()
             self.expect("RPAREN")
             return expr
-        raise ParserError(f"Unexpected token {self.current().type}")
+
+        cur = self.current()
+        msg = f"Unexpected token {cur.type} at line {cur.line}, col {cur.column}"
+        self.errors.append(msg)
+        self.synchronize()
+        raise ParserError(msg)
