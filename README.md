@@ -1,21 +1,24 @@
 # Recursive Descent Parser + AST + Visitor (Python)
 
-This project implements a **hand-written recursive descent parser** for a small language subset, builds an **AST**, and prints the tree using the **Visitor pattern**. It also supports **JSON output** and **error recovery**.
+A hand‑written recursive descent parser for a small imperative language.  
+It builds an **Abstract Syntax Tree (AST)** and prints it using the **Visitor Design Pattern**.  
+JSON output and syntax error recovery are supported.
 
 ---
 
 ##  Features
-- Hand‑written **recursive descent parser**
-- **AST construction** (Program, Functions, Statements, Expressions, etc.)
-- **Visitor pattern** for tree traversal
-- **PrintVisitor** (pretty AST output)
-- **JsonVisitor** (JSON AST output)
-- **Error recovery** (keeps parsing after syntax errors)
-- Supports variable declarations inside blocks
+
+- **Recursive descent parser** (no parser generators)
+- **AST construction** (Program, Functions, Statements, Expressions)
+- **Visitor pattern** for AST traversal
+- **PrintVisitor** (pretty tree output)
+- **JsonVisitor** (structured JSON output)
+- **Syntax error recovery** (continues parsing after errors)
+- Variable declarations inside blocks
 
 ---
 
-##  Grammar (summary)
+##  Grammar (Summary)
 
 ```
 Program     -> Declaration*
@@ -66,32 +69,88 @@ Primary     -> NUMBER | ID | "(" Expr ")"
 
 ---
 
-##  Run (Windows / WSL / Linux)
+##  Run
 
+### Print AST (default)
 ```bash
 python main.py test1.txt
 ```
 
-For JSON output:
-
+### JSON Output
 ```bash
 python main.py test1.txt --json
 ```
 
 ---
 
+##  Example Input
+
+```text
+int globalCount;
+
+function inc(x) {
+  int y;
+  y = x + 1;
+  return y;
+}
+
+function main() {
+  int a;
+  a = 5;
+  a = inc(a);
+}
+```
+
+---
+
+##  Example Output (PrintVisitor)
+
+```
+Program
+  VarDecl type=int name=globalCount
+  FuncDecl inc params=['x']
+    Block
+      VarDecl type=int name=y
+      Assign y
+        BinaryOp +
+          Identifier x
+          Literal 1
+      Return
+        Identifier y
+  FuncDecl main params=[]
+    Block
+      VarDecl type=int name=a
+      Assign a
+        Literal 5
+      Assign a
+        Call inc
+          Identifier a
+```
+
+---
+
 ##  Error Recovery
-If the input contains invalid syntax, the parser:
-- reports errors,
-- skips to a safe point,
-- continues parsing.
+
+If invalid syntax is found, the parser:
+
+- reports the error with line/column
+- skips to a safe point
+- continues parsing
+
+Example:
+```
+SYNTAX ERRORS:
+- Expected ('SEMICOL',) but got ID at line 3, col 3
+```
 
 ---
 
 ##  Requirements
+
 - Python 3.8+
 
 ---
 
 ##  Notes
-This project is **hand‑written** and does **not** use parser generators (ANTLR/YACC/Bison).
+
+This project is **fully hand‑written** and does **not** use parser generators (ANTLR/YACC/Bison).
