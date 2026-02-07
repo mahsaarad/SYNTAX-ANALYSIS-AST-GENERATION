@@ -13,6 +13,11 @@ class Parser:
     def current(self):
         return self.tokens[self.pos]
 
+    def peek(self):
+        if self.pos + 1 < len(self.tokens):
+            return self.tokens[self.pos + 1]
+        return self.tokens[-1]
+
     def advance(self):
         if self.current().type != "EOF":
             self.pos += 1
@@ -35,13 +40,13 @@ class Parser:
         return tok
 
     def synchronize(self):
-        # Always advance at least once to avoid infinite loops
         if self.current().type != "EOF":
             self.advance()
 
         sync_types = {
             "SEMICOL", "RBRACE", "EOF",
-            "INT", "FUNCTION", "IF", "WHILE", "RETURN"
+            "INT", "FLOAT", "BOOL", "STRING", "VOID",
+            "FUNCTION", "IF", "WHILE", "FOR", "RETURN", "PRINT"
         }
         while self.current().type not in sync_types:
             self.advance()
@@ -58,22 +63,30 @@ class Parser:
                 self.synchronize()
         return Program(decls)
 
+    def parse_type(self):
+        tok = self.expect("INT", "FLOAT", "BOOL", "STRING", "VOID")
+        return tok.value
+
     def declaration(self):
-        if self.match("INT"):
+        if self.current().type in ("INT", "FLOAT", "BOOL", "STRING"):
+            var_type = self.parse_type()
             name = self.expect("ID").value
             self.expect("SEMICOL")
-            return VarDecl("int", name)
+            return VarDecl(var_type, name)
+
         if self.match("FUNCTION"):
+            return_type = self.parse_type()
             name = self.expect("ID").value
             self.expect("LPAREN")
             params = []
-            if self.current().type == "ID":
-                params.append(self.expect("ID").value)
+            if self.current().type in ("INT", "FLOAT", "BOOL", "STRING"):
+                params.append(self.parse_type() + " " + self.expect("ID").value)
                 while self.match("COMMA"):
-                    params.append(self.expect("ID").value)
+                    params.append(self.parse_type() + " " + self.expect("ID").value)
             self.expect("RPAREN")
             body = self.block()
-            return FuncDecl(name, params, body)
+            return FuncDecl(return_type, name, params, body)
+
         return self.statement()
 
     def statement(self):
@@ -94,6 +107,32 @@ class Parser:
             body = self.statement()
             return WhileStmt(cond, body)
 
+        if self.match("FOR"):
+            self.expect("LPAREN")
+            init = None
+            if self.current().type in ("INT", "FLOAT", "BOOL", "STRING"):
+                var_type = self.parse_type()
+                name = self.expect("ID").value
+                init = VarDecl(var_type, name)
+            elif self.current().type == "ID" and self.peek().type == "OP" and self.peek().value == "=":
+                name = self.expect("ID").value
+                self.expect("OP")
+                init = Assign(name, self.expression())
+            self.expect("SEMICOL")
+
+            cond = None
+            if self.current().type != "SEMICOL":
+                cond = self.expression()
+            self.expect("SEMICOL")
+
+            update = None
+            if self.current().type != "RPAREN":
+                update = self.expression()
+            self.expect("RPAREN")
+
+            body = self.statement()
+            return ForStmt(init, cond, update, body)
+
         if self.match("RETURN"):
             if self.current().type != "SEMICOL":
                 val = self.expression()
@@ -102,14 +141,21 @@ class Parser:
             self.expect("SEMICOL")
             return ReturnStmt(val)
 
+        if self.match("PRINT"):
+            self.expect("LPAREN")
+            val = self.expression()
+            self.expect("RPAREN")
+            self.expect("SEMICOL")
+            return PrintStmt(val)
+
         if self.current().type == "LBRACE":
             return self.block()
 
-        if self.current().type == "INT":
-            self.match("INT")
+        if self.current().type in ("INT", "FLOAT", "BOOL", "STRING"):
+            var_type = self.parse_type()
             name = self.expect("ID").value
             self.expect("SEMICOL")
-            return VarDecl("int", name)
+            return VarDecl(var_type, name)
 
         if self.current().type == "ID":
             name = self.expect("ID").value
@@ -152,7 +198,23 @@ class Parser:
         return Block(stmts)
 
     def expression(self):
-        return self.equality()
+        return self.logical_or()
+
+    def logical_or(self):
+        node = self.logical_and()
+        while self.current().type == "OP" and self.current().value == "||":
+            op = self.expect("OP").value
+            right = self.logical_and()
+            node = BinaryOp(node, op, right)
+        return node
+
+    def logical_and(self):
+        node = self.equality()
+        while self.current().type == "OP" and self.current().value == "&&":
+            op = self.expect("OP").value
+            right = self.equality()
+            node = BinaryOp(node, op, right)
+        return node
 
     def equality(self):
         node = self.comparison()
@@ -196,6 +258,14 @@ class Parser:
     def primary(self):
         if self.match("NUMBER"):
             return Literal(self.tokens[self.pos - 1].value)
+        if self.match("FLOAT_LIT"):
+            return Literal(self.tokens[self.pos - 1].value)
+        if self.match("STRING_LIT"):
+            return Literal(self.tokens[self.pos - 1].value)
+        if self.match("TRUE"):
+            return Literal("true")
+        if self.match("FALSE"):
+            return Literal("false")
         if self.match("ID"):
             name = self.tokens[self.pos - 1].value
             if self.current().type == "LPAREN":

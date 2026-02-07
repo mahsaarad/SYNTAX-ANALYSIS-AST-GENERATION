@@ -18,6 +18,7 @@ class VarDecl(Node):
 
 @dataclass
 class FuncDecl(Node):
+    return_type: str
     name: str
     params: List[str]
     body: 'Block'
@@ -42,9 +43,22 @@ class WhileStmt(Node):
     def accept(self, visitor): return visitor.visit_while(self)
 
 @dataclass
+class ForStmt(Node):
+    init: Optional[Node]
+    condition: Optional[Node]
+    update: Optional[Node]
+    body: Node
+    def accept(self, visitor): return visitor.visit_for(self)
+
+@dataclass
 class ReturnStmt(Node):
     value: Optional[Node]
     def accept(self, visitor): return visitor.visit_return(self)
+
+@dataclass
+class PrintStmt(Node):
+    value: Node
+    def accept(self, visitor): return visitor.visit_print(self)
 
 @dataclass
 class Assign(Node):

@@ -1,5 +1,31 @@
-int x ;
-function add(a, b) {
-  return a + b;
-} 
-x = add (2, 3);
+function int max(int a, int b) {
+  if (a >= b) {
+    return a;
+  } else {
+    return b;
+  }
+}
+
+function void main() {
+  int i;
+  float f;
+  bool ok;
+  string msg;
+
+  i = 0;
+  f = 3.14;
+  ok = true;
+  msg = "hello";
+
+  print(msg);
+
+  for (i = 0; i < 5; i = i + 1) {
+    if (i == 2 || i == 3) {
+      print("two or three");
+    } else if (i >= 4 && ok) {
+      print("four");
+    } else {
+      print("other");
+    }
+  }
+}

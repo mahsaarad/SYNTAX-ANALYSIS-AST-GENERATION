@@ -1,24 +1,39 @@
 Program     -> Declaration*
-Declaration -> "int" ID ";" 
-            | "function" ID "(" Params? ")" Block
+
+Declaration -> VarDecl
+            | FunctionDecl
             | Statement
 
-Params      -> ID ("," ID)*
+Type        -> "int" | "float" | "bool" | "string" | "void"
 
-Statement   -> IfStmt | WhileStmt | ReturnStmt | Block | Assign | Call
+VarDecl     -> Type ID ";"
 
-IfStmt      -> "if" "(" Expr ")" Statement ("else" Statement)?
+FunctionDecl -> "function" Type ID "(" Params? ")" Block
+
+Params      -> Param ("," Param)*
+Param       -> Type ID
+
+Statement   -> IfStmt | WhileStmt | ForStmt | ReturnStmt | PrintStmt | Block | Assign | Call
+
+IfStmt      -> "if" "(" Expr ")" Statement ("else" IfStmt | "else" Statement)?
 WhileStmt   -> "while" "(" Expr ")" Statement
+ForStmt     -> "for" "(" ForInit ";" Expr? ";" Expr? ")" Statement
+ForInit     -> VarDeclNoSemi | AssignNoSemi | ε
+
 ReturnStmt  -> "return" Expr? ";"
+PrintStmt   -> "print" "(" Expr ")" ";"
 Block       -> "{" Declaration* "}"
 
 Assign      -> ID "=" Expr ";"
+AssignNoSemi -> ID "=" Expr
 Call        -> ID "(" (Expr ("," Expr)*)? ")" ";"
 
-Expr        -> Equality
+Expr        -> Or
+Or          -> And ("||" And)*
+And         -> Equality ("&&" Equality)*
 Equality    -> Comparison (("==" | "!=") Comparison)*
 Comparison  -> Term (("<" | "<=" | ">" | ">=") Term)*
 Term        -> Factor (("+" | "-") Factor)*
 Factor      -> Unary (("*" | "/") Unary)*
 Unary       -> ("-" | "!") Unary | Primary
-Primary     -> NUMBER | ID | "(" Expr ")"
+Primary     -> NUMBER | FLOAT | STRING | "true" | "false" | ID | "(" Expr ")"

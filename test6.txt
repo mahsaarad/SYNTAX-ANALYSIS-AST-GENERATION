@@ -1,6 +1,5 @@
-function main() {
-  int x;
-  int y;
-  x = 10;
-  y = x + 20;
+function void main() {
+  bool ok;
+  ok = true &&;
+  print("unterminated);
 }

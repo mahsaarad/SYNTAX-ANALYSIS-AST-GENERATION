@@ -1,13 +1,6 @@
-function main() {
-  int i;
-  i = 0;
-  while (i < 3) {
-    int temp;
-    temp = i * 2;
-    if (temp > 2) {
-      i = i + 1; ;
-    } else {
-      i = i + 2; 
-    }
+function string bad(int x) {
+  if (x > 0) {
+    return "ok";
+  } else {
+    return true;
   }
-}

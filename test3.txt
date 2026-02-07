@@ -1,4 +1,19 @@
-function bad() {
-  int x
-  x = 1;
+function bool isEven(int x) {
+  if (x == 0) {
+    return true;
+  } else if (x == 1) {
+    return false;
+  } else {
+    return isEven(x - 2);
+  }
+}
+
+function float addFloat(float a, float b) {
+  return a + b;
+}
+
+function void main() {
+  float result;
+  result = addFloat(1.5, 2.5);
+  print(result);
 }

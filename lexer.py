@@ -12,22 +12,26 @@ class LexerError(Exception):
     pass
 
 TOKEN_SPEC = [
-    ("NUMBER",   r"\d+"),
-    ("ID",       r"[A-Za-z_]\w*"),
-    ("OP",       r"==|!=|<=|>=|\+|-|\*|/|=|<|>"),
-    ("LPAREN",   r"\("),
-    ("RPAREN",   r"\)"),
-    ("LBRACE",   r"\{"),
-    ("RBRACE",   r"\}"),
-    ("SEMICOL",  r";"),
-    ("COMMA",    r","),
-    ("NEWLINE",  r"\n"),
-    ("SKIP",     r"[ \t]+"),
-    ("MISMATCH", r"."),
+    ("STRING_LIT", r"\"([^\"\\]|\\.)*\""),
+    ("FLOAT_LIT",  r"\d+\.\d+"),
+    ("NUMBER",     r"\d+"),
+    ("ID",         r"[A-Za-z_]\w*"),
+    ("OP",         r"\|\||&&|==|!=|<=|>=|\+|-|\*|/|=|<|>"),
+    ("LPAREN",     r"\("),
+    ("RPAREN",     r"\)"),
+    ("LBRACE",     r"\{"),
+    ("RBRACE",     r"\}"),
+    ("SEMICOL",    r";"),
+    ("COMMA",      r","),
+    ("NEWLINE",    r"\n"),
+    ("SKIP",       r"[ \t]+"),
+    ("MISMATCH",   r"."),
 ]
 
 KEYWORDS = {
-    "int", "if", "else", "while", "return", "function"
+    "int", "float", "bool", "string", "void",
+    "if", "else", "while", "for", "return", "function",
+    "true", "false", "print"
 }
 
 TOK_REGEX = "|".join(f"(?P<{name}>{pattern})" for name, pattern in TOKEN_SPEC)

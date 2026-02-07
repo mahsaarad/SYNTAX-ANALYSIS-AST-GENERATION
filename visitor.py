@@ -7,7 +7,9 @@ class Visitor:
     def visit_block(self, node): pass
     def visit_if(self, node): pass
     def visit_while(self, node): pass
+    def visit_for(self, node): pass
     def visit_return(self, node): pass
+    def visit_print(self, node): pass
     def visit_assign(self, node): pass
     def visit_binop(self, node): pass
     def visit_unary(self, node): pass
@@ -36,7 +38,7 @@ class PrintVisitor(Visitor):
         self._p(f"VarDecl type={node.var_type} name={node.name}")
 
     def visit_funcdecl(self, node):
-        self._p(f"FuncDecl {node.name} params={node.params}")
+        self._p(f"FuncDecl {node.name} return={node.return_type} params={node.params}")
         self.indent += 1
         node.body.accept(self)
         self.indent -= 1
@@ -70,12 +72,39 @@ class PrintVisitor(Visitor):
         node.body.accept(self)
         self.indent -= 1
 
+    def visit_for(self, node):
+        self._p("For")
+        self.indent += 1
+        self._p("Init:")
+        self.indent += 1
+        if node.init: node.init.accept(self)
+        self.indent -= 1
+        self._p("Condition:")
+        self.indent += 1
+        if node.condition: node.condition.accept(self)
+        self.indent -= 1
+        self._p("Update:")
+        self.indent += 1
+        if node.update: node.update.accept(self)
+        self.indent -= 1
+        self._p("Body:")
+        self.indent += 1
+        node.body.accept(self)
+        self.indent -= 1
+        self.indent -= 1
+
     def visit_return(self, node):
         self._p("Return")
         if node.value:
             self.indent += 1
             node.value.accept(self)
             self.indent -= 1
+
+    def visit_print(self, node):
+        self._p("Print")
+        self.indent += 1
+        node.value.accept(self)
+        self.indent -= 1
 
     def visit_assign(self, node):
         self._p(f"Assign {node.name}")
@@ -117,24 +146,35 @@ class JsonVisitor(Visitor):
         return {"type": "VarDecl", "var_type": node.var_type, "name": node.name}
 
     def visit_funcdecl(self, node):
-        return {"type": "FuncDecl", "name": node.name, "params": node.params, "body": node.body.accept(self)}
+        return {"type": "FuncDecl", "return_type": node.return_type, "name": node.name,
+                "params": node.params, "body": node.body.accept(self)}
 
     def visit_block(self, node):
         return {"type": "Block", "statements": [s.accept(self) for s in node.statements]}
 
     def visit_if(self, node):
-        return {
-            "type": "If",
-            "condition": node.condition.accept(self),
-            "then": node.then_branch.accept(self),
-            "else": node.else_branch.accept(self) if node.else_branch else None
-        }
+        return {"type": "If",
+                "condition": node.condition.accept(self),
+                "then": node.then_branch.accept(self),
+                "else": node.else_branch.accept(self) if node.else_branch else None}
 
     def visit_while(self, node):
         return {"type": "While", "condition": node.condition.accept(self), "body": node.body.accept(self)}
 
+    def visit_for(self, node):
+        return {
+            "type": "For",
+            "init": node.init.accept(self) if node.init else None,
+            "condition": node.condition.accept(self) if node.condition else None,
+            "update": node.update.accept(self) if node.update else None,
+            "body": node.body.accept(self)
+        }
+
     def visit_return(self, node):
         return {"type": "Return", "value": node.value.accept(self) if node.value else None}
+
+    def visit_print(self, node):
+        return {"type": "Print", "value": node.value.accept(self)}
 
     def visit_assign(self, node):
         return {"type": "Assign", "name": node.name, "value": node.value.accept(self)}
